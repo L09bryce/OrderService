@@ -19,6 +19,8 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String orderNumber;
+    @Column(name = "user_email")
+    private String userEmail;
     private String skuCode;
     private BigDecimal price;
     private Integer quantity;

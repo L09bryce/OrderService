@@ -38,7 +38,10 @@ class OrderServiceApplicationTests {
                 {
                      "skuCode": "OnePlus",
                      "price": 1000,
-                     "quantity": 1
+                     "quantity": 1,
+                     "userDetails": {
+                         "email": "customer@example.com"
+                     }
                 }
                 """;
 
@@ -55,5 +58,26 @@ class OrderServiceApplicationTests {
 				.body().asString();
 
 		assertThat(responseBodyString, Matchers.is("Order Placed Successfully"));
+
+		RestAssured.given()
+				.queryParam("userEmail", "customer@example.com")
+				.when()
+				.get("/api/order")
+				.then()
+				.statusCode(200)
+				.body("size()", Matchers.is(1))
+				.body("[0].userEmail", Matchers.is("customer@example.com"))
+				.body("[0].skuCode", Matchers.is("OnePlus"));
+	}
+
+	@Test
+	void shouldReturnNoOrdersForUnknownUser() {
+		RestAssured.given()
+				.queryParam("userEmail", "unknown@example.com")
+				.when()
+				.get("/api/order")
+				.then()
+				.statusCode(200)
+				.body("size()", Matchers.is(0));
 	}
 }
